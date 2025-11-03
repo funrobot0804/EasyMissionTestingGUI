@@ -1,0 +1,10 @@
+robot: msi_0        # This robot's name
+name: (msi_0) Blue_P6 ==> Blue_D3
+========
+["MoveTo_TrafficNetwork",["Blue_P6","SMC_manufacture@1F"],"Path"]
+["ButtonWait", 0, 10  ]
+["MoveTo_TrafficNetwork",["Blue_D3","SMC_manufacture@1F"],"Path"]
+["DockTo",["Blue_D3_dock","SMC_manufacture@1F"]]
+["ButtonWait", 0, 10  ]
+
+

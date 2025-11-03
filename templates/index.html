@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>EasyMissionTestingGUI</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .left-panel {
+            width: 30%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0; /* 防止因右邊壓縮 */
+        }
+        .right-panel {
+            flex-grow: 1;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+        .mission-button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background-color: #ddd;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .status-label {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #eee;
+            border-left: 5px solid #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <!--<h2>FMS Server IP: 127.0.0.1</h2>-->
+        <p>Station: <span id="station-name">{{ station }}</span></p>
+
+        <!-- 建立空白按鈕容器，之後用 JavaScript 動態填入 -->
+        <div id="button-container"></div>
+    </div>
+
+    <div class="right-panel">
+        <h2>State</h2>
+        <div id="status-area">
+            <div class="status-label" id="status0">Initial...</div>
+        </div>
+    </div>
+
+    <script>
+        const stationName = {{ station | tojson }};
+        const originalNames = {{ missions | map(attribute='name') | list | tojson }};
+        const files = {{ missions | map(attribute='file') | list | tojson }};
+        const amrs = {{ missions | map(attribute='amr') | list | tojson }};
+
+        const buttonContainer = document.getElementById("button-container");
+
+        // 建立按鈕元件
+        for (let i = 0; i < originalNames.length; i++) {
+            const btn = document.createElement("button");
+            btn.className = "mission-button";
+            btn.id = "btn" + i;
+            btn.innerText = originalNames[i]; // 初始文字
+            btn.onclick = () => runMission(files[i]);
+            buttonContainer.appendChild(btn);
+        }
+
+        async function runMission(file) {
+            try {
+                const res = await fetch(`/run?file=${file}`);
+                const data = await res.json();
+                alert("✅ mission_id: " + data.mission_id + "    task=" + data.task + "");
+            } catch (e) {
+                alert("❌ ERROR：" + e);
+            }
+        }
+
+        async function updateStatus() {
+            const strlist = [stationName, ...originalNames];
+            const amrlist = [...amrs];
+
+            try {
+                const res = await fetch("/status", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ strlist,amrlist })
+                });
+                const data = await res.json();
+                const textList = data.text_list;
+
+                // 更新右側主狀態
+                //const statusLabel = document.getElementById("status0");
+                //if (statusLabel && textList.length > 0) {
+                //    statusLabel.innerText = textList[0];
+                //}
+                const statusLabel = document.getElementById("status0");
+                if (statusLabel && textList.length > 0) {
+                    const formattedText = textList[0]
+                        .replace(/\[([^\]]+)\]/g, '<span style="color:blue;">[$1]</span>')
+                        .replace(/ETA:(\d+)(s)?/g, 'ETA:<span style="color:red;">$1$2</span>')
+                        .replace(/ERROR:([^\n]+)/g, '<span style="color:red;">ERROR:$1</span>')
+                        .replace(/\n/g, '<br>');
+                    statusLabel.innerHTML = formattedText;
+                }
+                // 更新按鈕名稱
+                for (let i = 1; i < textList.length; i++) {
+                    const btn = document.getElementById("btn" + (i - 1));
+                    if (btn) {
+                        btn.innerText = textList[i];
+                    }
+                }
+
+            } catch (e) {
+                console.error("❌ ERROR", e);
+            }
+        }
+
+        setInterval(updateStatus, 1000);
+        updateStatus();
+    </script>
+</body>
+</html>

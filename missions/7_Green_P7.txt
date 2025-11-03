@@ -1,0 +1,10 @@
+robot: msi_3        # This robot's name
+name: (msi_3) Green_P7 ==> Green_D4
+========
+["MoveTo_TrafficNetwork",["Green_P7","SMC_manufacture@1F"],"Path"]
+["PlaySound", ["/data/wav/[js]reach_target_0.mp3",9999, 1]]
+["ButtonWait", 0, 10  ]
+["MoveTo_TrafficNetwork",["Green_D4","SMC_manufacture@1F"],"Path"]
+["DockTo",["Green_D4_dock","SMC_manufacture@1F"]]
+["PlaySound", ["/data/wav/[js]reach_target_0.mp3",9999, 1]]
+["ButtonWait", 0, 10  ]
