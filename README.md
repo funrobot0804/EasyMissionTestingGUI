@@ -4,12 +4,14 @@ A **web-based AMR (Autonomous Mobile Robot) dispatching system** implemented in 
 using the **FMS RESTful API provided by MSI AMR**.  
 It provides functionality similar to **Uber**, allowing general operators to request AMR services via a web interface.
 
-video1:
-https://youtu.be/kMWkNF2xy48
-video2:
-https://youtu.be/G2Y_0qxCy-I
-video3:
-https://youtu.be/pnXSka7gOxg
+
+[video1](https://youtu.be/kMWkNF2xy48)  
+
+[video2](https://youtu.be/G2Y_0qxCy-I) 
+
+[video3](https://youtu.be/pnXSka7gOxg) 
+
+
 ---
 
 ## 🌟 Features
